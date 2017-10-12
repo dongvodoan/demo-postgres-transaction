@@ -2,7 +2,7 @@ cache:
   key: "$CI_COMMIT_REF_NAME"
   untracked: true
 
-build:
+staging:
   script:
     - npm install
     - npm install bignumber.js
@@ -22,7 +22,7 @@ product:
     - pm2 stop app.js
     - pm2 start app.js
   environment:
-    name: staging
+    name: product
     url: https://api-gameserver.kuberacoin.com
   tags:
     - PRODUCT
