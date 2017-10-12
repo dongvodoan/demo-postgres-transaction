@@ -1,0 +1,30 @@
+cache:
+  key: "$CI_COMMIT_REF_NAME"
+  untracked: true
+
+build:
+  script:
+    - npm install
+    - npm install bignumber.js
+    - pm2 stop app.js
+    - pm2 start app.js
+  environment:
+    name: staging
+    url: http://111.221.46.238:8000
+  tags:
+    - STAGING
+  only:
+    - staging
+
+product:
+  script:
+    - npm install
+    - pm2 stop app.js
+    - pm2 start app.js
+  environment:
+    name: staging
+    url: http://111.221.46.238:8000
+  tags:
+    - PRODUCT
+  only:
+    - master
