@@ -19,6 +19,7 @@ staging:
 product:
   script:
     - npm install
+    - npm install bignumber.js
     - pm2 stop app.js
     - pm2 start app.js
   environment:
