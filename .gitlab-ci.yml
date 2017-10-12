@@ -23,7 +23,7 @@ product:
     - pm2 start app.js
   environment:
     name: staging
-    url: http://111.221.46.238:8000
+    url: https://api-gameserver.kuberacoin.com
   tags:
     - PRODUCT
   only:
