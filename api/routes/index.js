@@ -1,10 +1,6 @@
 'use strict';
 
 var userController = require('../controllers/user');
-var gameController = require('../controllers/game');
-var txController = require('../controllers/transaction');
-var config = require('../../config/configuration');
-
 
 module.exports = function(app){
     app.post('/signup', function(req, res){
