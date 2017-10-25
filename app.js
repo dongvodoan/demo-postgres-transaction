@@ -8,7 +8,9 @@ var app = new express();
 
 //  mongodb
 mongoose.Promise = global.Promise;
-mongoose.connect(config.db_url);
+mongoose.connect(config.db_url, {
+    useMongoClient: true
+});
 
 //  middle ware
 app.use(bodyParser.json());
