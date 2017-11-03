@@ -78,4 +78,49 @@ module.exports = function(app){
         res.header('Access-Control-Allow-Origin', '*');
         res.json({error: true, data: 'game_id is required'});
     });
+
+    app.post('/playgame2', function(req, res){
+        res.header('Access-Control-Allow-Origin', '*');
+        var gameTypeId   = req.body.gameTypeId;
+        var _players  = req.body.players;
+        var amount = req.body.amount;       
+        if( gameTypeId === undefined || gameTypeId.trim() == ""){
+            res.json({error: true,data: 'gameTypeId not found'});
+        } else if( _players === undefined  || _players.trim() == ""){
+            res.json({error: true, data: 'players not found'});
+        } else if(amount === undefined || amount.trim() == ""){
+            res.json({error: true, data: 'amount not found'});
+        } else if(isNaN(parseFloat(amount))){
+            res.json({error: true, data: 'amount is not number'});
+        } else{
+            try{
+                var players = JSON.parse(_players);
+                if(!Array.isArray(players) || players.length < 2){
+                    res.json({error: true, data: 'Incorrect players'});
+                } else {
+                    gameController.insertGameMultiPlayers(gameTypeId, players, amount, function (err, data) {
+                        res.json({error: err, data: data});
+                    });
+                }
+            } catch(e){
+                res.json({error: true, data: 'Incorrect players'});
+            }
+        }
+    });
+
+    app.post('/endgame2', function(req, res) {
+        res.header('Access-Control-Allow-Origin', '*');
+        var gameId = req.body.gameId;
+        var winner = req.body.winner;
+
+        if(winner === undefined || winner.trim() == ""){
+            res.json({error: true, data: 'can not find winner'});
+        } else if(gameId === undefined || gameId.trim() == ""){
+            res.json({error: true, data: 'gameId not found'});
+        } else{
+            gameController.endGameMultiPlayers(gameId, winner, function(err, data, game_id) {
+                res.json({error: err, data: {_id: game_id, data: data}});
+            });
+        }
+    });
 }

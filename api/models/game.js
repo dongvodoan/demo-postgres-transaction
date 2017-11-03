@@ -9,6 +9,7 @@ var gameSchema = new Schema({
     amount: Number,
     player1: String,
     player2: String,
+    players: Array,
     winner: String,
     status: Number, //  0: playing, 1: over
     createdAt: Date,

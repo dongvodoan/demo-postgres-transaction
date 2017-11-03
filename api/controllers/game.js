@@ -230,5 +230,159 @@ module.exports = {
                 cb(false, data);
             }
         });
+    },
+    insertNewGameMultiPlayers: function(_gameTypeId, _players, _amount, cb){
+        var game = new Game();
+        game.gameTypeId = _gameTypeId;
+        game.amount = _amount;
+        game.players = _players;
+        game.winner = null;
+        game.status = 0;
+        game.createdAt = new Date();
+        game.updatedAt = new Date();
+
+        game.save(function(err, _game) {
+            if(err != null){
+                cb(err);
+            } else{
+                cb(null, _game);
+            }
+        });
+    },
+    insertGameMultiPlayers: function (_gameTypeId, _players, _amount, cb){
+        var $this = this;
+        var game = null;
+        async.waterfall([
+            function(cb){
+                $this.checkGameTypeExists(_gameTypeId, cb);
+            },
+            function(data, cb){
+                let sum = 0;
+                let err = null;
+                for(let i = 0; i< _players.length; i++){
+                    $this.checkValidUser(_players[i], _amount, function(_err, data){
+                        if(_err == null){
+                            sum++;
+                            if(sum == _players.length){
+                                cb(err, data);
+                            }
+                        } else {
+                            err = _err;
+                            sum++;
+                            if(sum == _players.length){
+                                cb(err, data);
+                            }
+                        }
+                    });
+                };
+            },
+            function(data, cb){
+                var isDuplicate = false;
+                for(let i = 0; i< _players.length - 1; i++){
+                    for(let j= i + 1; j < _players.length; j++){
+                        if(_players[i] == _players[j]){
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                    if(isDuplicate) break;
+                }
+                if(isDuplicate){
+                    cb('Can not play with yourself');
+                } else {
+                    $this.insertNewGameMultiPlayers(_gameTypeId, _players, _amount, cb);
+                }
+            },
+            function(data, cb){
+                game = data;
+                let sum = 0;
+                let err = null;
+                for(let i = 0; i < _players.length; i++){
+                    $this.updateBalance(_players[i], -_amount, function(_err, data){
+                        if(err == null){
+                            sum++;
+                            if(sum == _players.length){
+                                cb(err, data);
+                            }
+                        } else {
+                            err = _err;
+                            sum++;
+                            if(sum == _players.length){
+                                cb(err, data);
+                            }
+                        }
+                    });
+                }
+            }
+        ], function(err, data){
+            if(err){
+                cb(true, err);
+            } else {
+                cb(false, game);
+            }
+        });
+    },
+    endGameMultiPlayers: function(_gameId, _winner, cb){
+        var $this = this;
+
+        async.waterfall([
+            function(cb){
+                $this.checkGameById(_gameId, cb);
+            },
+            function(game, cb){
+
+                var isValidWinner = false;
+
+                for(let i =0; i< game.players.length; i++){
+                    if(_winner == game.players[i]){
+                        isValidWinner = true;
+                        break;
+                    }
+                }
+
+                if(_winner == 'null' || isValidWinner){
+                    game.status = 1;
+                    game.updatedAt = new Date();
+                    game.winner = _winner;
+                    $this.updateGame(_gameId, game, cb);
+                } else {
+                    cb('Invalid winner');
+                }
+            },
+            function(game, cb){
+                $this.getGameTypeRatio(game, cb);
+            },
+            function(game, ratio, cb){
+                if(_winner == 'null') {
+                    let sum = 0;
+                    let err = null;
+                    for(let i = 0; i < game.players.length; i++){
+                        $this.updateBalance(game.players[i], game.amount, function(_err, data){
+                            if(err == null){
+                                sum++;
+                                if(sum == game.players.length){
+                                    cb(err, data);
+                                }
+                            } else {
+                                err = _errr;
+                                sum++;
+                                if(sum == game.players.length){
+                                    cb(err, data);
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    var amount = game.amount * game.players.length * (1 - ratio);
+                    $this.updateBalance(_winner, amount, cb);
+                }
+            }
+        ], function(err, data){
+            if(err){
+                cb(true, err);
+            } else {
+                cb(false, 'End game successfully', _gameId);
+            }
+        });
     }
 }
