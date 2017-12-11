@@ -5,7 +5,6 @@ var gameController = require('../controllers/game');
 var txController = require('../controllers/transaction');
 var config = require('../../config/configuration');
 
-
 module.exports = function(app){
     app.post('/signup', function(req, res){
         res.header('Access-Control-Allow-Origin', '*');
@@ -39,6 +38,25 @@ module.exports = function(app){
             });
         }
     });
+
+    /**
+     * Callback login BAP Platform
+     * @body accessToken Token BAP Platform
+     * @return
+     */
+    app.post('/login/bap-platform', asyncWrap(async (req,res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        let accessToken = req.body.accessToken;
+        let url = `${config.BAPUri}user`;
+
+        if (accessToken === undefined || accessToken.trim() === "") {
+            res.json({error: true, data: 'accessToken is required'});
+        } else {
+            let user = await httpService.getPlatform(url, accessToken);
+
+            res.json({data: user});
+        }
+    }));
 
     app.get('/users', function(req, res){
         res.header('Access-Control-Allow-Origin', '*');

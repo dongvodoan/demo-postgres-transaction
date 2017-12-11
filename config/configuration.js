@@ -9,5 +9,8 @@ module.exports = {
     FAUCET_BALANCE: 1000, //  to faucet: balance <1000
     WITHDRAW_MIN: 1000,
     WITHDRAW_FEE: 100,
-    TOKEN_SYMBOL: 'KBR'
-}
+    TOKEN_SYMBOL: 'KBR',
+    BAPUri: "http://111.221.46.238:1341/api/v1/",
+    BAPAppId: "1512462045734",
+    BAPSecretKey: "1lcARf2LIIf8m11HXzyTaTOAH3kuwtZW",
+};
