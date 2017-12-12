@@ -2,8 +2,8 @@
 
 module.exports = function(app){
     app.use('/login/bap-platform', (req, res, next) => {
-        if(!req.user) {
-            res.json({error: true, data: 'unauthorized', code: 401});
+        if(!req.body.accessToken) {
+            res.json({error: true, data: 'access token is require', code: 422});
         }
         next();
     });

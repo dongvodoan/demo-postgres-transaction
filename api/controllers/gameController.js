@@ -7,92 +7,61 @@ var GameType = require('../models/gametype');
 var async = require('async');
 
 module.exports = {
-    insertGame: function (_gameTypeId, _player1, _player2, _amount, cb){
-        var $this = this;
-        var game = null;
-        async.waterfall([
-            function(cb){
-                $this.checkGameTypeExists(_gameTypeId, cb);
-            },
-            function(data, cb){
-                $this.checkValidUser(_player1, _amount, cb);
-            },
-            function(data, cb){
-                $this.checkValidUser(_player2, _amount, cb);
-            },
-            function(data, cb){
-                if(_player1 == _player2) {
-                    cb('Can not play with yourself');
-                } else {
-                    $this.insertNewGame(_gameTypeId, _player1, _player2, _amount, cb);
-                }
-            },
-            function(data, cb){
-                game = data;
-                $this.updateBalance(_player1, -_amount, cb);
-            },
-            function(data, cb){
-                $this.updateBalance(_player2, -_amount, cb);
-            }
-        ], function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, game);
-            }
-        });
-    },
-    endGame: function(_gameId, _winner, cb){
-        var $this = this;
 
-        async.waterfall([
-            function(cb){
-                $this.checkGameById(_gameId, cb);
-            },
-            function(game, cb){
-                if(_winner == 'null' || _winner == game.player1 || _winner == game.player2){
-                    game.status = 1;
-                    game.updatedAt = new Date();
-                    game.winner = _winner;
-                    $this.updateGame(_gameId, game, cb);
-                } else {
-                    cb('Invalid winner');
-                }
-            },
-            function(game, cb){
-                $this.getGameTypeRatio(game, cb);
-            },
-            function(game, ratio, cb){
-                if(_winner == 'null'){
-                    $this.updateBalance(game.player1, game.amount, function(err, data){
-                        if(err){
-                            cb(err);
-                        } else {
-                            $this.updateBalance(game.player2, game.amount, cb);
-                        }
-                    });
-                } else {
-                    var amount = game.amount * 2 * (1 - ratio);
-                    $this.updateBalance(_winner, amount, cb);
-                }
+    postNewGameMatch: asyncWrap(async (req, res) => {
+        const gameTypeId   = req.body.gameTypeId;
+        const player1  = req.body.player1;
+        const player2  = req.body.player2;
+        const amount = req.body.amount;
+        let newGameMatch = await gameRepository.createNewGameMatch(gameTypeId, player1, player2, amount);
+        if (newGameMatch) {
+            let promise = await Promise.all([
+                transactionRepository.postSubtractAmount(player1, amount),
+                transactionRepository.postSubtractAmount(player2, amount),
+                historyRepository.createHistoryTransaction(player1, amount, 0),
+                historyRepository.createHistoryTransaction(player2, amount, 0),
+            ]);
+
+            if (promise[0].status !== 200) {
+                await historyTransaction.findByIdAndUpdate({ _id: promise[2]._id }, { $set: { status: 0 }});
             }
-        ], function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, 'End game successfully', _gameId);
+            if (promise[1].status !== 200) {
+                await historyTransaction.findByIdAndUpdate({ _id: promise[3]._id }, { $set: { status: 0 }});
             }
-        });
-    },
-    getAllGame: function(cb){
-        Game.find({}, function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, data);
+        }
+        res.json({error: false, data: newGameMatch});
+    }),
+
+    postEndGame: asyncWrap(async (req, res) => {
+        const gameId = req.body.gameId;
+        const winner = req.body.winner;
+        let updateGameMatch = await game.findByIdAndUpdate({_id: gameId}, {
+            $set: {
+                status: 1,
+                winner: winner
             }
-        });
-    },
+        }, {new: true});
+        
+        if (updateGameMatch) {
+            let ratio = await gameRepository.getGameTypeRatio({_id: updateGameMatch.gameTypeId});
+            let amountAdd = updateGameMatch.amount * 2 * (1 - ratio);
+            let promise = await Promise.all([
+                transactionRepository.postAddAmount(winner, amountAdd),
+                historyRepository.createHistoryTransaction(winner, amountAdd, 1),
+            ]);
+
+            if (promise[0].status !== 200) {
+                await historyTransaction.findByIdAndUpdate({ _id: promise[1]._id }, { $set: { status: 0 }});
+            }
+        }
+
+        res.json({error: false, data: updateGameMatch});
+    }),
+
+    getAllGame: asyncWrap(async (req, res) => {
+        let gameMaths =  await game.find({});
+        res.json({error: false, data: gameMaths});
+    }),
 
     deleteGame: function(_id, cb){
         Game.findById(_id, function(err, data) {
@@ -157,26 +126,6 @@ module.exports = {
         });
     },
 
-    insertNewGame: function(_gameTypeId, _player1, _player2, _amount, cb){
-        var game = new Game();
-        game.gameTypeId = _gameTypeId;
-        game.amount = _amount;
-        game.player1 = _player1;
-        game.player2 = _player2;
-        game.winner = null;
-        game.status = 0;
-        game.createdAt = new Date();
-        game.updatedAt = new Date();
-
-        game.save(function(err, _game) {
-            if(err != null){
-                cb(err);
-            } else{
-                cb(null, _game);
-            }
-        });
-    },
-
     updateBalance: function(userId, amount, cb){
         User.findByIdAndUpdate(userId,{
             $inc: { balance: amount},
@@ -210,15 +159,11 @@ module.exports = {
         });
     },
 
-    getHistoryByUserId: function(userId, cb){
-        Game.find({$or: [{player1: userId}, {player2: userId}]}, function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, data);
-            }
-        });
-    },
+    getHistoryByUserId: asyncWrap(async (req, res) => {
+        let userId = req.params.id;
+        let historyUser =  await game.find({$or: [{player1: userId}, {player2: userId}]});
+        res.json({error: false, data: historyUser});
+    }),
 
     getGameById: function(gameId, cb){
         Game.findById(gameId, function(err, data){
@@ -231,158 +176,52 @@ module.exports = {
             }
         });
     },
-    insertNewGameMultiPlayers: function(_gameTypeId, _players, _amount, cb){
-        var game = new Game();
-        game.gameTypeId = _gameTypeId;
-        game.amount = _amount;
-        game.players = _players;
-        game.winner = null;
-        game.status = 0;
-        game.createdAt = new Date();
-        game.updatedAt = new Date();
 
-        game.save(function(err, _game) {
-            if(err != null){
-                cb(err);
-            } else{
-                cb(null, _game);
-            }
-        });
-    },
-    insertGameMultiPlayers: function (_gameTypeId, _players, _amount, cb){
-        var $this = this;
-        var game = null;
-        async.waterfall([
-            function(cb){
-                $this.checkGameTypeExists(_gameTypeId, cb);
-            },
-            function(data, cb){
-                let sum = 0;
-                let err = null;
-                for(let i = 0; i< _players.length; i++){
-                    $this.checkValidUser(_players[i], _amount, function(_err, data){
-                        if(_err == null){
-                            sum++;
-                            if(sum == _players.length){
-                                cb(err, data);
-                            }
-                        } else {
-                            err = _err;
-                            sum++;
-                            if(sum == _players.length){
-                                cb(err, data);
-                            }
-                        }
-                    });
-                };
-            },
-            function(data, cb){
-                var isDuplicate = false;
-                for(let i = 0; i< _players.length - 1; i++){
-                    for(let j= i + 1; j < _players.length; j++){
-                        if(_players[i] == _players[j]){
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-                    if(isDuplicate) break;
-                }
-                if(isDuplicate){
-                    cb('Can not play with yourself');
-                } else {
-                    $this.insertNewGameMultiPlayers(_gameTypeId, _players, _amount, cb);
-                }
-            },
-            function(data, cb){
-                game = data;
-                let sum = 0;
-                let err = null;
-                for(let i = 0; i < _players.length; i++){
-                    $this.updateBalance(_players[i], -_amount, function(_err, data){
-                        if(err == null){
-                            sum++;
-                            if(sum == _players.length){
-                                cb(err, data);
-                            }
-                        } else {
-                            err = _err;
-                            sum++;
-                            if(sum == _players.length){
-                                cb(err, data);
-                            }
-                        }
-                    });
+    insertGameMultiPlayers: asyncWrap(async (req, res) => {
+        const gameTypeId   = req.body.gameTypeId;
+        let players  = req.body.players.split(",");
+        const amount = req.body.amount;
+        let newGameMatch = await gameRepository.insertNewGameMultiPlayers(gameTypeId, players, amount);    
+        if (newGameMatch) {
+            players = newGameMatch.players;
+            for (let i = 0; i < players.length; i++) {
+                let player = players[i];
+                let promise = await Promise.all([
+                    transactionRepository.postSubtractAmount(player, amount),
+                    historyRepository.createHistoryTransaction(player, amount, 0),
+                ]);
+                if (promise[0] !== 200) {
+                    await historyTransaction.findByIdAndUpdate({ _id: promise[1]._id }, { $set: { status: 0 }});                    
                 }
             }
-        ], function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, game);
+        }
+        res.json({error: false, data: newGameMatch});
+    }),
+
+    postEndGameMultiPlayers: asyncWrap(async (req, res) => {
+        const gameId = req.body.gameId;
+        const winner = req.body.winner;
+        
+        let updateGameMatch = await game.findByIdAndUpdate({_id: gameId}, {
+            $set: {
+                status: 1,
+                winner: winner
             }
-        });
-    },
-    endGameMultiPlayers: function(_gameId, _winner, cb){
-        var $this = this;
+        }, {new: true});
+        
+        if (updateGameMatch) {
+            let ratio = await gameRepository.getGameTypeRatio({_id: updateGameMatch.gameTypeId});
+            let amountAdd = updateGameMatch.amount * updateGameMatch.players.length * (1 - ratio);
+            let promise = await Promise.all([
+                transactionRepository.postAddAmount(winner, amountAdd),
+                historyRepository.createHistoryTransaction(winner, amountAdd, 1),
+            ]);
 
-        async.waterfall([
-            function(cb){
-                $this.checkGameById(_gameId, cb);
-            },
-            function(game, cb){
-
-                var isValidWinner = false;
-
-                for(let i =0; i< game.players.length; i++){
-                    if(_winner == game.players[i]){
-                        isValidWinner = true;
-                        break;
-                    }
-                }
-
-                if(_winner == 'null' || isValidWinner){
-                    game.status = 1;
-                    game.updatedAt = new Date();
-                    game.winner = _winner;
-                    $this.updateGame(_gameId, game, cb);
-                } else {
-                    cb('Invalid winner');
-                }
-            },
-            function(game, cb){
-                $this.getGameTypeRatio(game, cb);
-            },
-            function(game, ratio, cb){
-                if(_winner == 'null') {
-                    let sum = 0;
-                    let err = null;
-                    for(let i = 0; i < game.players.length; i++){
-                        $this.updateBalance(game.players[i], game.amount, function(_err, data){
-                            if(err == null){
-                                sum++;
-                                if(sum == game.players.length){
-                                    cb(err, data);
-                                }
-                            } else {
-                                err = _errr;
-                                sum++;
-                                if(sum == game.players.length){
-                                    cb(err, data);
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    var amount = game.amount * game.players.length * (1 - ratio);
-                    $this.updateBalance(_winner, amount, cb);
-                }
+            if (promise[0].status !== 200) {
+                await historyTransaction.findByIdAndUpdate({ _id: promise[1]._id }, { $set: { status: 0 }});
             }
-        ], function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, 'End game successfully', _gameId);
-            }
-        });
-    }
+        }
+
+        res.json({error: false, data: updateGameMatch});
+    }),
 }

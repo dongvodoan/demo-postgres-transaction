@@ -1,196 +1,36 @@
 'use strict';
 
-var User = require('../models/user');
 var config = require('../../config/configuration');
-var wallet = require('../../utils/wallet');
-var constant  = require('../../config/constant');
 
 module.exports = {
-    insertUser: function(username, password, cb){
-        User.findOne({'username': username}, function(err, data){
-            if(err != null){
-                cb(true, err);
-            } else if(data != null){
-                cb(true, 'The user exists');
-            } else {
-                var newWallet = wallet.createNewWallet(password);
-                var user = new User();
-                user.username = username;
-                user.password = user.generateHash(password);
-                user.address = newWallet.address;
-                user.keystore = newWallet.keystore;
-                user.balance = config.FAUCET_AMOUNT;
-                user.createdAt = new Date();
-                user.updatedAt = new Date();
-                user.faucetedAt = new Date();
-        
-                user.save(function(err, data){
-                    if(err != null){
-                        cb(true, err);
-                    } else {
-                        cb(false, data);
-                    }
-                });
-            }
-        });
-    },
-    login: function(username, password, cb){
-        User.findOne({'username': username}, function(err, data){
-            if(err != null){
-                cb(true, err);
-            } else if(data === null) {
-                cb(true, 'User not found');
-            } else {
-                if(!data.validPassword(password)){
-                    cb(true, 'Password incorrect');
-                } else if(data.keystore === null){
-                    var newWallet = wallet.createNewWallet(password);
-                    User.findByIdAndUpdate(data._id, {
-                        address: newWallet.address,
-                        keystore: newWallet.keystore,
-                        updatedAt: new Date()
-                    }, {
-                        new : true
-                    }, function(err, data){
-                        if(err){
-                            cb(true, err);
-                        } else {
-                            cb(false, data);
-                        }
-                    });
-                }else {
-                    cb(false, data);
-                }
-            }
-        });
-    },
-    getAllUser: function(cb){
-        User.find({}, function(err,data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, data);
-            }
-        });
-    },
-    faucet: function(user_id, cb){
-        var $this = this;
-        User.findById(user_id, function(err, data){
-            if(err != null){
-                cb(true, err);
-            } else if (data === null){
-                cb(true, 'User not found');
-            } else if(data.keystore == null){
-                cb(true, 'Wallet not found');
-            } else if(data.balance >= config.FAUCET_BALANCE){
-                cb(true, 'Require balance < ' + config.FAUCET_BALANCE + ' ' +config.TOKEN_SYMBOL);
-            }else {
-                var faucetedAt = data.faucetedAt;
-                if(faucetedAt == null){
-                    data.faucetedAt = new Date();
-                    data.balance += config.FAUCET_AMOUNT;
-                    data.updatedAt = new Date();
-                    $this.updateUserById(user_id, data, cb);
-                } else{
-                    var diff = Math.abs(data.faucetedAt - new Date());
-                    var minutes = Math.floor((diff/1000)/60);
-                    if(minutes < config.FAUCET_TIME){
-                        cb(true, 'Waiting ' + (config.FAUCET_TIME - minutes) + ' minutes to faucet');
-                    } else {
-                        data.faucetedAt = new Date();
-                        data.balance += config.FAUCET_AMOUNT;
-                        data.updatedAt = new Date();
-                        $this.updateUserById(user_id, data, cb);
-                    }
-                }
-            }
-        });
-    },
-    createWallet: function(user_id, password, cb){
-        var $this = this;
-        User.findById(user_id, function(err, data){
-            if(err){
-                cb(true, err);
-            } else if(data === null) {
-                cb(true, 'User not found');
-            } else if(data.keystore != null){
-                cb(true, 'Wallet already exists');
-            } else {
-                var newWallet = wallet.createNewWallet(password);
-                var data = {
-                    address: newWallet.address,
-                    keystore: newWallet.keystore,
-                    updatedAt: new Date()
-                }
-                User.findByIdAndUpdate(user_id, data, function(err, user){
-                    if(err){
-                        cb(true, err);
-                    } else {
-                        cb(false, data);
-                    }
-                });
-            }
-        });
-    },
-    updateUserById: function(id, data, cb){
-        User.findByIdAndUpdate(id, data, {new : true}, function(err, user){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, user);
-            }
-        });
-    },
+    /**
+     * Get all users
+     */
+    getUsers: asyncWrap(async (req, res) => {
+        let users = await user.find({});
+        res.json({error: false, data: users});
+    }),
 
-    findUserByAddress: function(address, cb){
-        User.findOne({address: address}, function(err, user){
-            if(err){
-                cb(true, err);
-            } else {
-                console.log(user);
-                cb(false, user);
-            }
-        });
-    },
+    /**
+     * Get detail user
+     */
+    getUser: asyncWrap(async (req, res) => {
+        let userId = req.params.id;
+        let user = await userRepository.getUser(userId);
+        res.json({error: false, data: user});
+    }),
 
-    updateUserByAddress: function(address, data, cb) {
-        //console.log("update user by address");
-        User.findOneAndUpdate({address: address}, data, function(err, user) {
-            if(err != null){
-                cb(true, err);
-            } else if(user == null){
-                cb(true, "user not exist");
-            } else{
-                cb(false, user);
-            }
-        });
-    },
+    /**
+     * Get current user login
+     */
+    getProfile: asyncWrap(async (req, res) => {
+        let userId = req.user._id;
+        let user = await userRepository.getUser(userId);
+        res.json({error: false, data: user});
+    }),
 
-    getToken: function(user_id,cb){
-        User.findById(user_id, function(err, data){
-            if(err){
-                cb(true, err);
-            } else if(data === null){
-                cb(true, 'User not found');
-            } else {
-                cb(false, data.balance, data._id);
-            }
-        });
-    },
-
-    getUserInfo: function(user_id, cb){
-        User.findById(user_id).lean().exec(function(err, data){
-            if(err){
-                cb(true, err);
-            } else if(data === null){
-                cb(true, 'User not found');
-            } else {
-                var kbr = wallet.getTokenBalance(data.address) + ' KBR';
-                var eth = wallet.getETHBalance(data.address) + ' ETH';
-                data.eth = eth;
-                data.kbr = kbr;
-                cb(false, data);
-            }
-        });
-    }
+    getHistoryTransactions: asyncWrap(async (req, res) => {
+        let histories = await historyTransaction.find({});
+        res.json({error: false, data: histories});
+    })
 }
