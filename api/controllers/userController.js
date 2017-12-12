@@ -4,7 +4,7 @@ var User = require('../models/user');
 var bcrypt = require('bcrypt-nodejs');
 var config = require('../../config/configuration');
 var wallet = require('../../utils/wallet');
-var transaction = require('../controllers/transaction');
+var transaction = require('../controllers/transactionController');
 var constant  = require('../../config/constant');
 
 module.exports = {

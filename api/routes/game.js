@@ -1,6 +1,6 @@
 'use strict';
 
-var gameController = require('../controllers/game');
+var gameController = require('../controllers/gameController');
 
 module.exports = function(app){
 

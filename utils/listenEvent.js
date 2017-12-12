@@ -1,10 +1,10 @@
 'use strict'
 
-var Tx = require('../api/controllers/transaction');
+var Tx = require('../api/controllers/transactionController');
 var wallet = require('./wallet');
-var User = require('../api/controllers/user');
+var User = require('../api/controllers/userController');
 var constant = require('../config/constant');
-var transaction = require('../api/controllers/transaction');
+var transaction = require('../api/controllers/transactionController');
 
 module.exports = {
     listenEvent: function() {
@@ -18,7 +18,7 @@ module.exports = {
                 var remove = event.removed;
                 var txHash = event.transactionHash;
                 var amount = event.args.value.toNumber();
-                //console.log(amount);
+                //console.log(amount)
                 if(!remove){
                     //transaction withdraw
                     if(event.args.from == constant.serverAddress){

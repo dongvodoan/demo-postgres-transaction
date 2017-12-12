@@ -14,7 +14,10 @@ const fse = require("fs-extra");
 
 //  mongodb
 mongoose.Promise = global.Promise;
-mongoose.connect(config.db_url);
+mongoose.connect(config.db_url, {
+    useMongoClient: true
+});
+
 
 //  middle ware
 app.use(bodyParser.json());
@@ -25,18 +28,17 @@ global.asyncWrap = (fn, errorCallback) => {
         fn(req, res, next).catch(error => {
             if (errorCallback){
                 errorCallback(req, res, error);
-            }
-            else{
-                res.json({error});
+            } else {
+                res.json({error: true, data: error});
             }
         })
     }
 };
 
 /**
- * Global all Repositories in api/services
+ * Global all Services in api/services
  */
-let services = async () => {
+let globalServices = async () => {
     let servicesDir = path.join(__dirname, 'api/services');
     let allServiceFiles = await fse.readdir(servicesDir);
     for (let serviceFile of allServiceFiles) {
@@ -44,7 +46,46 @@ let services = async () => {
         global[nameOfService] = require(path.join(servicesDir, nameOfService));
     }
 }
-services();
+globalServices();
+
+/**
+ * Global all Controllers in api/controllers
+ */
+let globalControllers = async () => {
+    let controllersDir = path.join(__dirname, 'api/controllers');
+    let allControllerFiles = await fse.readdir(controllersDir);
+    for (let controllerFile of allControllerFiles) {
+        let nameOfController = controllerFile.replace('.js', '');
+        global[nameOfController] = require(path.join(controllersDir, nameOfController));
+    }
+}
+globalControllers();
+
+/**
+ * Global all Models in api/models
+ */
+let globalModels = async () => {
+    let modelsDir = path.join(__dirname, 'api/models');
+    let allModelsFiles = await fse.readdir(modelsDir);
+    for (let modelFile of allModelsFiles) {
+        let nameOfModel = modelFile.replace('.js', '');
+        global[nameOfModel] = require(path.join(modelsDir, nameOfModel));
+    }
+}
+globalModels();
+
+/**
+ * Global all Repositories in api/repositories
+ */
+let globalRepositories = async () => {
+    let repositoriesDir = path.join(__dirname, 'api/repositories');
+    let allRepositoriesFiles = await fse.readdir(repositoriesDir);
+    for (let repositoryFile of allRepositoriesFiles) {
+        let nameOfRepository = repositoryFile.replace('.js', '');
+        global[nameOfRepository] = require(path.join(repositoriesDir, nameOfRepository));
+    }
+}
+globalRepositories();
 
 //  api
 require('./api/routes/index')(app);

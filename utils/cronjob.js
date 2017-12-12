@@ -2,9 +2,9 @@
 
 var CronJob = require('cron').CronJob;
 var web3 = require('../config/constant').getWeb3();
-var transaction = require('../api/controllers/transaction');
+var transaction = require('../api/controllers/transactionController');
 var constant = require('../config/constant');
-var User = require('../api/controllers/user');
+var User = require('../api/controllers/userController');
 
 module.exports = {
 
