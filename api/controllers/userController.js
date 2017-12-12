@@ -1,10 +1,8 @@
 'use strict';
 
 var User = require('../models/user');
-var bcrypt = require('bcrypt-nodejs');
 var config = require('../../config/configuration');
 var wallet = require('../../utils/wallet');
-var transaction = require('../controllers/transactionController');
 var constant  = require('../../config/constant');
 
 module.exports = {
@@ -140,65 +138,6 @@ module.exports = {
                 cb(true, err);
             } else {
                 cb(false, user);
-            }
-        });
-    },
-
-    withdraw: function(id, amount, cb) {
-        var $this = this;
-        User.findById(id, function(err, data){
-            if(err != null){
-                cb(true, err);
-            } else if (data === null){
-                cb(true, 'User not found');
-            } else {
-                var userAddress = data.address;
-                var balance = data.balance;
-                //console.log(userAddress);
-                //console.log(balance);
-                if(balance >= amount){
-                    console.log("IM HERE");
-                    //data.balance -= amount;
-                    $this.updateUserByAddress(userAddress, {$inc: {balance: -amount}}, function (err, user) {
-                       if(err){
-                           console.log("has error when update withdraw");
-                           cb(true, err);
-                       } else{
-                           console.log(user);
-                            wallet.sendToken(userAddress, amount - config.WITHDRAW_FEE, function(err, txId) {
-                                if(err){
-                                    cb(true, err);
-                                } else {
-                                    transaction.insertTransaction(txId, constant.serverAddress, userAddress, amount, 0);
-                                    cb(false, txId);
-                                }
-                            });
-                       }
-                    });
-                } else{
-                    cb(false, "not enough balance");
-                }
-            }
-        });
-    },
-
-    depoisit: function (id, amount, rawData, cb){
-        //var $this = this;
-        User.findById(id, function(err, data){
-            if(err != null){
-                cb(true, err);
-            } else if (data === null){
-                cb(true, 'User not found');
-            } else {
-                var useAddress = data.address;
-                wallet.sendRawTransaction(rawData, function(err, txId){
-                    if(err){
-                        cb(true, err);
-                    } else{
-                        transaction.insertTransaction(txId, useAddress, constant.serverAddress, amount, 0);
-                        cb(false, txId);
-                    }
-                });
             }
         });
     },

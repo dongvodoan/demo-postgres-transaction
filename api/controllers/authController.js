@@ -3,7 +3,9 @@
 const config = require('../../config/configuration');
 
 module.exports = {
-
+    /**
+     * Callback login BAP Platform Controller
+     */
     callbackPlatform: asyncWrap(async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
         let accessToken = req.body.accessToken;
@@ -15,18 +17,21 @@ module.exports = {
             let response = await httpService.getPlatform(url, accessToken);
             if (response.status && response.status === 200) {
                 let userPlatform = response.data;
-                let checkUser = await user.findOne({email: userPlatform.email});
+                let checkUser = await user.findOne({username: userPlatform.username});
                 if(checkUser) {
                     if (checkUser.accessToken !== accessToken) {
                         await user.findByIdAndUpdate({_id:checkUser.id}, {accessToken:accessToken});
                     }
-                    res.json({error: false, data: checkUser});
+                    let token = userService.generateUserToken({_id: checkUser.id});
+                    res.json({error: false, data: token});
                 } else {
                     let data = {
-                        email: userPlatform.email
+                        username: userPlatform.username,
+                        accessToken: accessToken
                     };
                     let newUser = await userRepository.createUser(data);
-                    return res.ok({error: false, data: newUser});
+                    let token = UserService.generateUserToken({_id: newUser.id});
+                    return res.ok({error: false, data: token});
                 }
             }
             res.json({error: true, data: 'bad request'});

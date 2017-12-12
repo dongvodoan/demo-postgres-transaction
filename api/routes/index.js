@@ -3,7 +3,6 @@
 var userController = require('../controllers/userController');
 var authController = require('../controllers/authController');
 var gameController = require('../controllers/gameController');
-var txController = require('../controllers/transactionController');
 var config = require('../../config/configuration');
 
 module.exports = function(app){

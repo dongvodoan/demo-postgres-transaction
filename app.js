@@ -3,9 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var flash = require('connect-flash');
 var config = require('./config/configuration');
-var event = require('./utils/listenEvent');
 var app = new express();
 
 const path = require("path");
@@ -18,8 +16,7 @@ mongoose.connect(config.db_url, {
     useMongoClient: true
 });
 
-
-//  middle ware
+//  middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -87,17 +84,30 @@ let globalRepositories = async () => {
 }
 globalRepositories();
 
+// decode token 
+app.use('*', async (req, res, next) => {
+    try {
+        let token = req.headers['x-access-token'];
+        if (!token) return next();
+        let userId = await userService.jwtVerify(token);
+        req.user = await user.findById(userId);       
+        next();
+    } catch (error) {
+        // Error when decode token, and req.user will be null
+        //  -> requireLogin police with return 401
+        console.log('Error when decoded token');
+        console.log(error);
+        next();
+    }
+});
+
+// middleware/validation
+// require('./api/policies/requireLogin')(app);
+
 //  api
 require('./api/routes/index')(app);
 require('./api/routes/game')(app);
 require('./api/routes/gametype')(app);
-
-/*
-var GameType = require('./api/controllers/gametype');
-GameType.insertGameType('headshot', 'bap headshot', 0.1);
-GameType.insertGameType('sumo', 'bap sumo', 0.2);
-GameType.insertGameType('football', 'bap football', 0.25);
-*/
 
 app.listen(config.port, function(err) {
     if (err) {

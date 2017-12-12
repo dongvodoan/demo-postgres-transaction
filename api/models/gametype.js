@@ -1,15 +1,14 @@
 'use strict';
 
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs')
+const mongoose = require('mongoose');
 
-var Schema = mongoose.Schema;
-var gameTypeSchema = new Schema({
-    name: String,
-    description: String,
-    ratio: Number   //  0 < ratio < 1
-});
+const Schema = mongoose.Schema;
+const gameTypeSchema = new Schema({
+    name: { type: String },
+    description: { type: String },
+    ratio: { type: Number }   //  0 < ratio < 1
+}, { timestamps: true });
 
-var gameTypeMeta = mongoose.model('GameTypeMeta', gameTypeSchema);
+const gameTypeMeta = mongoose.model('GameTypeMeta', gameTypeSchema);
 
 module.exports = gameTypeMeta;
