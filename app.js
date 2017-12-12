@@ -90,22 +90,27 @@ app.use('*', async (req, res, next) => {
         let token = req.headers['x-access-token'];
         if (!token) return next();
         let userId = await userService.jwtVerify(token);
-        req.user = await user.findById(userId);       
+        req.user = await user.findById(userId);
+        res.header('Access-Control-Allow-Origin', '*');       
         next();
     } catch (error) {
         // Error when decode token, and req.user will be null
         //  -> requireLogin police with return 401
         console.log('Error when decoded token');
         console.log(error);
+        res.header('Access-Control-Allow-Origin', '*');
         next();
     }
 });
 
 // middleware/validation
-// require('./api/policies/requireLogin')(app);
+require('./api/policies/userPolicy')(app);
+require('./api/policies/loginPolicy')(app);
+require('./api/policies/gameMatchPolicy')(app);
+
 
 //  api
-require('./api/routes/index')(app);
+require('./api/routes/user')(app);
 require('./api/routes/game')(app);
 require('./api/routes/gametype')(app);
 

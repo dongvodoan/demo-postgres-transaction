@@ -11,13 +11,9 @@ module.exports = {
 
         gameType.save();
     },
-    getAllGameType: function(cb){
-        GameType.find({}, function(err, data){
-            if(err){
-                cb(true, err);
-            } else {
-                cb(false, data);
-            }
-        });
-    }
+
+    getAllGameType: asyncWrap(async (req, res) => {
+        let games = await gametype.find({});
+        res.json({error: false, data: games});
+    })
 }
