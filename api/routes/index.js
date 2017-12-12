@@ -1,10 +1,9 @@
 'use strict';
 
-var userController = require('../controllers/user');
-var gameController = require('../controllers/game');
-var txController = require('../controllers/transaction');
+var userController = require('../controllers/userController');
+var authController = require('../controllers/authController');
+var gameController = require('../controllers/gameController');
 var config = require('../../config/configuration');
-
 
 module.exports = function(app){
     app.post('/signup', function(req, res){
@@ -39,6 +38,13 @@ module.exports = function(app){
             });
         }
     });
+
+    /**
+     * Callback login BAP Platform
+     * @body accessToken Token BAP Platform
+     * @return
+     */
+    app.route('/login/bap-platform').post(authController.callbackPlatform);
 
     app.get('/users', function(req, res){
         res.header('Access-Control-Allow-Origin', '*');

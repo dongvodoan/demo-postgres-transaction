@@ -1,6 +1,6 @@
 'use strict';
 
-var gameTypeController = require('../controllers/gametype');
+var gameTypeController = require('../controllers/gametypeController');
 
 module.exports = function(app){
     app.get('/gametypes', function(req, res){
