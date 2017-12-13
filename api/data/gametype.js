@@ -2,10 +2,10 @@
 
 module.exports = [
     {
-        "app_id": "59cda2ca8e25d41706309aa9",
+        "app_id": "1513132839936",
         "ratio": 0.05,
-        "description": "kbr sumo",
-        "name": "sumo"
+        "description": "Bap Sumo Legend",
+        "name": "SUMO LEGEND"
     },
     {
         "app_id": "59d1ec9c0b0a392fd3ffb23d",
@@ -14,28 +14,28 @@ module.exports = [
         "name": "headshot"
     },
     {
-        "app_id": "59cda2ca8e25d41706309aaa",
+        "app_id": "1513132760397",
         "ratio": 0.05,
-        "description": "kbr penalty",
-        "name": "penalty"
+        "description": "Bap penalty king 2017",
+        "name": "Penalty King 2017"
     },
     {
-        "app_id": "59cda2ca8e25d41706309aa8",
+        "app_id": "1513132666939",
         "ratio": 0.1,
         "description": "bap girls war",
-        "name": "girlwar"
+        "name": "Girls War"
     },
     {
-        "app_id": "59e82b26f36d280364362007",
+        "app_id": "1513132820056",
         "ratio": 0.1,
-        "description": "bap jumpandkick",
-        "name": "jumpandkick"
+        "description": "bap jump and kick",
+        "name": "Jump And Kick"
     },
     {
-        "app_id": "59ed90a9f36d2864754348c7",
+        "app_id": "1513132780739",
         "ratio": 0.1,
-        "description": "bap lastsurvivor",
-        "name": "lastsurvivor"
+        "description": "bap last survivor",
+        "name": "Last Survisor"
     },
     {
         "app_id": "5a057112734d1d68d42ce3fc",
@@ -50,33 +50,33 @@ module.exports = [
         "name": "hardrace"
     },
     {
-        "app_id": "5a0574cf734d1d68d42ce69a",
+        "app_id": "1513132612577",
         "ratio": 0.1,
-        "description": "bap Hell Cage",
-        "name": "hellcage"
+        "description": "Bap hellcage",
+        "name": "HellCage"
     },
     {
-        "app_id": "5a05750f734d1d68d42ce6b3",
+        "app_id": "1513132714844",
         "ratio": 0.1,
-        "description": "bap First Kill",
-        "name": "firstkill"
+        "description": "bap first kill",
+        "name": "FirstKill"
     },
     {
-        "app_id": "5a2520a9f36d280fefe2ed0f",
+        "app_id": "1513132591886",
         "ratio": 0.1,
-        "description": "bap dance with boss",
-        "name": "dancewithboss"
+        "description": "Bap dance with boss",
+        "name": "Dance With Boss"
     },
     {
-        "app_id": "5a252079f36d280fefe2ed05",
+        "app_id": "1513132646831",
         "ratio": 0.1,
         "description": "bap dance with boom",
-        "name": "dancewithboom"
+        "name": "Dance With Boom"
     },
     {
-        "app_id": "5a05754a734d1d68d42ce6da",
+        "app_id": "1513132686557",
         "ratio": 0.1,
         "description": "bap jump to head",
-        "name": "jumptohead"
+        "name": "Jump To Head"
     }
 ];
