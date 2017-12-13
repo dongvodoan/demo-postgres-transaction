@@ -8,10 +8,10 @@ module.exports = [
         "name": "SUMO LEGEND"
     },
     {
-        "app_id": "59d1ec9c0b0a392fd3ffb23d",
+        "app_id": "1512462007965",
         "ratio": 0.05,
-        "description": "kbr headshot",
-        "name": "headshot"
+        "description": "Bap zombie killing",
+        "name": "Zombie Killing"
     },
     {
         "app_id": "1513132760397",
@@ -38,16 +38,16 @@ module.exports = [
         "name": "Last Survisor"
     },
     {
-        "app_id": "5a057112734d1d68d42ce3fc",
+        "app_id": "1513132737134",
         "ratio": 0.1,
-        "description": "bap sharpshooter",
-        "name": "sharpshooter"
+        "description": "bap sharp shooter",
+        "name": "ModelGun War"
     },
     {
-        "app_id": "5a05745a734d1d68d42ce676",
+        "app_id": "1513132627422",
         "ratio": 0.1,
-        "description": "bap Hard Race",
-        "name": "hardrace"
+        "description": "Bap king of workers",
+        "name": "King of Workers"
     },
     {
         "app_id": "1513132612577",

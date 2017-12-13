@@ -5,7 +5,10 @@ var bcrypt = require('bcrypt-nodejs')
 
 var Schema = mongoose.Schema;
 var gameSchema = new Schema({
-    gameTypeId: String,
+    gameTypeId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'GameTypeMeta'
+    },
     amount: { type: Number },
     player1: { type: String },
     player2: { type: String },
