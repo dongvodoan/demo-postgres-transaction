@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    port: 8001,
+    port: 8002,
     secret: 'kbrserver',
     db_url: 'mongodb://localhost:27017/gameserver_kuberacoin',
     // db_url: 'mongodb://bap:123456@ds149844.mlab.com:49844/kbr',
