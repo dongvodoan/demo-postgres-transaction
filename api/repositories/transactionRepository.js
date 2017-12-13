@@ -9,12 +9,12 @@ module.exports = {
      *         - amount subtract
      * @return: data
      */
-    postSubtractAmount: async(userId, amount) => {
+    postSubtractAmount: async(userId, amount, appId) => {
         try {
             let url = `${config.BAPUri}transaction/subtract`;
             let body = {
                 "amount": amount,
-                "app_id": config.BAPAppId,
+                "app_id": appId,
             };
             let userData = await user.findOne({_id: userId});
             let accessToken = userData.accessToken ? userData.accessToken : '';
@@ -31,12 +31,12 @@ module.exports = {
      *         - amount add
      * @return: data
      */
-    postAddAmount: async(userId, amount) => {
+    postAddAmount: async(userId, amount, appId) => {
         try {
             let url = `${config.BAPUri}transaction/add`;
             let body = {
                 "amount": amount,
-                "app_id": config.BAPAppId,
+                "app_id": appId,
             };
             let userData = await user.findOne({_id: userId});
             let accessToken = userData.accessToken ? userData.accessToken : '';
