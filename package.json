@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab-new.bap.jp/tienlv/kbrserver"
+    "url": "https://gitlab-new.bap.jp/Game/kbr-server"
   },
   "author": "tienlv",
   "license": "ISC",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^8.1.0",
     "keythereum": "^1.0.2",
     "mongoose": "^4.11.13",
+    "node-schedule": "^1.2.5",
     "nodemon": "^1.12.1",
     "passport": "^0.4.0",
     "path": "^0.12.7",

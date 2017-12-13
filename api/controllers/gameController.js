@@ -19,8 +19,8 @@ module.exports = {
             let promise = await Promise.all([
                 transactionRepository.postSubtractAmount(player1, amount, gameType.app_id),
                 transactionRepository.postSubtractAmount(player2, amount, gameType.app_id),
-                historyRepository.createHistoryTransaction(player1, amount, 0),
-                historyRepository.createHistoryTransaction(player2, amount, 0),
+                historyRepository.createHistoryTransaction(player1, amount, gameTypeId, 0),
+                historyRepository.createHistoryTransaction(player2, amount, gameTypeId, 0),
             ]);
 
             if (promise[0].status !== 200) {
@@ -48,7 +48,7 @@ module.exports = {
             let amountAdd = updateGameMatch.amount * 2 * (1 - ratio);
             let promise = await Promise.all([
                 transactionRepository.postAddAmount(winner, amountAdd, updateGameMatch.gameTypeId.app_id),
-                historyRepository.createHistoryTransaction(winner, amountAdd, 1),
+                historyRepository.createHistoryTransaction(winner, amountAdd, updateGameMatch.gameTypeId, 1),
             ]);
 
             if (promise[0].status !== 200) {
@@ -190,7 +190,7 @@ module.exports = {
                 let player = players[i];
                 let promise = await Promise.all([
                     transactionRepository.postSubtractAmount(player, amount, gameType.app_id),
-                    historyRepository.createHistoryTransaction(player, amount, 0),
+                    historyRepository.createHistoryTransaction(player, amount, gameTypeId, 0),
                 ]);
                 if (promise[0] !== 200) {
                     await historyTransaction.findByIdAndUpdate({ _id: promise[1]._id }, { $set: { status: 0 }});                    
@@ -216,7 +216,7 @@ module.exports = {
             let amountAdd = updateGameMatch.amount * updateGameMatch.players.length * (1 - ratio);
             let promise = await Promise.all([
                 transactionRepository.postAddAmount(winner, amountAdd, updateGameMatch.gameTypeId.app_id),
-                historyRepository.createHistoryTransaction(winner, amountAdd, 1),
+                historyRepository.createHistoryTransaction(winner, amountAdd, updateGameMatch.gameTypeId, 1),
             ]);
 
             if (promise[0].status !== 200) {

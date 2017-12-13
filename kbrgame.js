@@ -8,6 +8,7 @@ var app = new express();
 
 const path = require("path");
 const fse = require("fs-extra");
+const cronService = require("./api/services/cronService");
 
 
 //  mongodb
@@ -118,6 +119,15 @@ if (config.env !== 'production') {
     require('./api/policies/fakerPolicy')(app);
     require('./api/routes/faker')(app);
 }
+
+// 404 not found
+app.use('*', (req, res, next) => {
+    res.status(404).json({error: true, data: "Not found", code:404});
+    next();
+});
+
+// Cron job
+cronService.cronTransacionFails();
 
 app.listen(config.port, function(err) {
     if (err) {
