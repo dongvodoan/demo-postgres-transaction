@@ -113,6 +113,7 @@ require('./api/policies/gameMatchPolicy')(app);
 require('./api/routes/user')(app);
 require('./api/routes/game')(app);
 require('./api/routes/gametype')(app);
+require('./api/routes/faker')(app);
 
 app.listen(config.port, function(err) {
     if (err) {
