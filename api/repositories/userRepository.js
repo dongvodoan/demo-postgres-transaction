@@ -14,7 +14,7 @@ module.exports = {
     getUser: async(userId) => {
         try {
             let promise = await Promise.all([
-                user.findOne({_id: userId}),
+                user.findOne({_id: userId}).select('-accessToken -__v'),
                 userRepository.getDepositBalanceByUser(userId),
             ]); 
             let data = {
