@@ -12,24 +12,7 @@ module.exports = function(app){
 
     app.route('/get-history/:id').get(gameController.getHistoryByUserId);
 
-    app.get('/get-history', function(req, res){
-        res.header('Access-Control-Allow-Origin', '*');
-        res.json({error: true, data: 'user_id is required'});
-    });
-
-    app.get('/get-gameinfo/:game_id', function(req, res){
-        res.header('Access-Control-Allow-Origin', '*');
-        var game_id = req.params.game_id;
-
-        gameController.getGameById(game_id, function(err, data){
-            res.json({error: err, data: data});
-        });
-    });
-
-    app.get('/get-gameinfo', function(req, res){
-        res.header('Access-Control-Allow-Origin', '*');
-        res.json({error: true, data: 'game_id is required'});
-    });
+    app.route('/get-gameinfo/:id').get(gameController.getGameById);
 
     app.route('/playgame2').post(gameController.insertGameMultiPlayers);
 

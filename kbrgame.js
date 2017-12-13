@@ -108,6 +108,7 @@ app.use('*', async (req, res, next) => {
 require('./api/policies/userPolicy')(app);
 require('./api/policies/loginPolicy')(app);
 require('./api/policies/gameMatchPolicy')(app);
+require('./api/policies/adminPolicy')(app);
 
 //  api
 require('./api/routes/user')(app);

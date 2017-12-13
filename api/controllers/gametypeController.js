@@ -1,19 +1,13 @@
 'use strict';
 
-var GameType = require('../models/gametype');
-
 module.exports = {
-    insertGameType: function(name, description, ratio){
-        var gameType = new GameType();
-        gameType.name = name;
-        gameType.description = description;
-        gameType.ratio = ratio;
-
-        gameType.save();
-    },
+    postGameType: asyncWrap(async (req, res) => {
+        let newGameType = await gametype.create(req.body);
+        res.json({error: false, data: newGameType});
+    }),
 
     getAllGameType: asyncWrap(async (req, res) => {
-        let games = await gametype.find({});
-        res.json({error: false, data: games});
+        let gameTypes = await gametype.find({});
+        res.json({error: false, data: gameTypes});
     })
 }
