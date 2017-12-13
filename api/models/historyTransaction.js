@@ -26,7 +26,11 @@ const HistoryTransactionSchema = new mongoose.Schema(
         mothod : {
             type: Number,
             enum: [0, 1] // 0: subtract coin ; 1: add coin
-        }
+        },
+        gameType: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'GameTypeMeta'
+        },
     },
     {
         timestamps: true

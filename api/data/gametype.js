@@ -21,61 +21,61 @@ module.exports = [
     },
     {
         "app_id": "1513132666939",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap girls war",
         "name": "Girls War"
     },
     {
         "app_id": "1513132820056",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap jump and kick",
         "name": "Jump And Kick"
     },
     {
         "app_id": "1513132780739",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap last survivor",
         "name": "Last Survisor"
     },
     {
         "app_id": "1513132737134",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap sharp shooter",
         "name": "ModelGun War"
     },
     {
         "app_id": "1513132627422",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "Bap king of workers",
         "name": "King of Workers"
     },
     {
         "app_id": "1513132612577",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "Bap hellcage",
         "name": "HellCage"
     },
     {
         "app_id": "1513132714844",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap first kill",
         "name": "FirstKill"
     },
     {
         "app_id": "1513132591886",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "Bap dance with boss",
         "name": "Dance With Boss"
     },
     {
         "app_id": "1513132646831",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap dance with boom",
         "name": "Dance With Boom"
     },
     {
         "app_id": "1513132686557",
-        "ratio": 0.1,
+        "ratio": 0.05,
         "description": "bap jump to head",
         "name": "Jump To Head"
     }
