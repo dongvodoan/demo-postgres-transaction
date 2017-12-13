@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const gameTypeSchema = new Schema({
-    app_id: { type: String },
+    appId: { type: String },
     name: { type: String },
     description: { type: String },
     ratio: { type: Number }   //  0 < ratio < 1

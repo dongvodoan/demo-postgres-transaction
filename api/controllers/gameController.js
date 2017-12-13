@@ -12,8 +12,8 @@ module.exports = {
         let newGameMatch = await gameRepository.createNewGameMatch(gameTypeId, player1, player2, amount);
         if (newGameMatch) {
             let promise = await Promise.all([
-                transactionRepository.postSubtractAmount(player1, amount, gameType.app_id),
-                transactionRepository.postSubtractAmount(player2, amount, gameType.app_id),
+                transactionRepository.postSubtractAmount(player1, amount, gameType.appId),
+                transactionRepository.postSubtractAmount(player2, amount, gameType.appId),
                 historyRepository.createHistoryTransaction(player1, amount, gameTypeId, 0),
                 historyRepository.createHistoryTransaction(player2, amount, gameTypeId, 0),
             ]);
@@ -36,14 +36,16 @@ module.exports = {
                 status: 1,
                 winner: winner
             }
-        }, {new: true}).populate('gameTypeId', 'app_id');
+        }, {new: true}).populate('gameTypeId', 'appId');
         
         if (updateGameMatch) {
-            let ratio = await gameRepository.getGameTypeRatio({_id: updateGameMatch.gameTypeId});
+            let appId = updateGameMatch.gameTypeId.appId;
+            let gameTypeId = updateGameMatch.gameTypeId._id;
+            let ratio = await gameRepository.getGameTypeRatio({_id: gameTypeId});
             let amountAdd = updateGameMatch.amount * 2 * (1 - ratio);
             let promise = await Promise.all([
-                transactionRepository.postAddAmount(winner, amountAdd, updateGameMatch.gameTypeId.app_id),
-                historyRepository.createHistoryTransaction(winner, amountAdd, updateGameMatch.gameTypeId, 1),
+                transactionRepository.postAddAmount(winner, amountAdd, appId),
+                historyRepository.createHistoryTransaction(winner, amountAdd, gameTypeId, 1),
             ]);
 
             if (promise[0].status !== 200) {
@@ -82,7 +84,7 @@ module.exports = {
             for (let i = 0; i < players.length; i++) {
                 let player = players[i];
                 let promise = await Promise.all([
-                    transactionRepository.postSubtractAmount(player, amount, gameType.app_id),
+                    transactionRepository.postSubtractAmount(player, amount, gameType.appId),
                     historyRepository.createHistoryTransaction(player, amount, gameTypeId, 0),
                 ]);
                 if (promise[0] !== 200) {
@@ -102,14 +104,16 @@ module.exports = {
                 status: 1,
                 winner: winner
             }
-        }, {new: true}).populate('gameTypeId', 'app_id');
+        }, {new: true}).populate('gameTypeId', 'appId');
         
         if (updateGameMatch) {
-            let ratio = await gameRepository.getGameTypeRatio({_id: updateGameMatch.gameTypeId});
+            let appId = updateGameMatch.gameTypeId.appId;
+            let gameTypeId = updateGameMatch.gameTypeId._id;
+            let ratio = await gameRepository.getGameTypeRatio({_id: gameTypeId});
             let amountAdd = updateGameMatch.amount * updateGameMatch.players.length * (1 - ratio);
             let promise = await Promise.all([
-                transactionRepository.postAddAmount(winner, amountAdd, updateGameMatch.gameTypeId.app_id),
-                historyRepository.createHistoryTransaction(winner, amountAdd, updateGameMatch.gameTypeId, 1),
+                transactionRepository.postAddAmount(winner, amountAdd, appId),
+                historyRepository.createHistoryTransaction(winner, amountAdd, gameTypeId, 1),
             ]);
 
             if (promise[0].status !== 200) {
