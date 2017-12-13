@@ -1,0 +1,13 @@
+#cache:
+#  key: "$CI_COMMIT_REF_NAME"
+#  untracked: true
+
+staging:
+  script:
+     - npm install
+#    - pm2 stop app.js
+     - pm2 start app.js
+  tags:
+    - STAGING
+  only:
+    - staging
