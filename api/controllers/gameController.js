@@ -1,11 +1,6 @@
 
 'use strict';
 
-var Game = require('../models/game');
-var User = require('../models/user');
-var GameType = require('../models/gametype');
-var async = require('async');
-
 module.exports = {
 
     postNewGameMatch: asyncWrap(async (req, res) => {
@@ -64,119 +59,17 @@ module.exports = {
         res.json({error: false, data: gameMaths});
     }),
 
-    deleteGame: function(_id, cb){
-        Game.findById(_id, function(err, data) {
-            if(err != null){
-                cb(err);
-            }
-            data.remove(function (err) {
-                cb(err);
-            });
-        });
-    },
-
-    checkGameTypeExists: function(gameTypeId, cb){
-        GameType.findById(gameTypeId, function(err,data){
-            if(err){
-                cb(err);
-            } else if(data === null){
-                cb('Gametype not found');
-            } else {
-                cb(null, data);
-            }
-        });
-    },
-
-    checkGameExists: function(gameTypeId, romId, cb){
-        Game.findOne({'gameTypeId': gameTypeId, 'roomId': romId}, function(err, data){
-            if(err){
-                cb(err);
-            } else if(data === null) {
-                cb(null, 'Game not found');
-            } else {
-                cb('Game exists', data);
-            }
-        });
-    },
-
-    checkGameById: function(gameId, cb){
-        Game.findById(gameId, function(err, data){
-            if(err){
-                cb(err);
-            } else if(data === null){
-                cb('Game not found');
-            } else if(data.status ==1){
-                cb('Game is over');
-            } else {
-                cb(null, data);
-            }
-        });
-    },
-
-    checkValidUser: function(userId, amount, cb){
-        User.findById(userId, function(err, data){
-            if(err){
-                cb(err);
-            } else if(data === null) {
-                cb(userId + ' not found');
-            } else if(data.balance < amount){
-                cb(userId + ' not enought token');
-            }else {
-                cb(null, data);
-            }
-        });
-    },
-
-    updateBalance: function(userId, amount, cb){
-        User.findByIdAndUpdate(userId,{
-            $inc: { balance: amount},
-            updatedAt: new Date()
-        }, function(err, data){
-            if(err){
-                cb(err);
-            } else {
-                cb(null, data);             
-            }
-        });
-    },
-
-    updateGame: function(gameId, data, cb){
-        Game.findByIdAndUpdate(gameId, data, {new: true} ,function(err, data){
-            if(err){
-                cb(err);
-            } else {
-                cb(null, data);
-            }
-        });
-    },
-
-    getGameTypeRatio: function(game,cb){
-        GameType.findById(game.gameTypeId, function(err, data){
-            if(err || data === null){
-                cb(true);
-            } else {
-                cb(false, game, data.ratio);
-            }
-        });
-    },
-
     getHistoryByUserId: asyncWrap(async (req, res) => {
         let userId = req.params.id;
         let historyUser =  await game.find({$or: [{player1: userId}, {player2: userId}]});
         res.json({error: false, data: historyUser});
     }),
 
-    getGameById: function(gameId, cb){
-        Game.findById(gameId, function(err, data){
-            if(err){
-                cb(true, err);
-            } else if(data === null){
-                cb(true, 'Game not found');
-            } else {
-                cb(false, data);
-            }
-        });
-    },
+    getGameById: asyncWrap(async (req, res) => {
+        let gameId = req.params.id;
+        let gameInfo = await game.findOne({_id: gameId});
+        res.json({error: false, data: gameInfo});
+    }),
 
     insertGameMultiPlayers: asyncWrap(async (req, res) => {
         const gameTypeId   = req.body.gameTypeId;

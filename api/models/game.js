@@ -10,8 +10,8 @@ var gameSchema = new Schema({
         ref: 'GameTypeMeta'
     },
     amount: { type: Number },
-    player1: { type: String },
-    player2: { type: String },
+    player1: { type: Schema.ObjectId, ref: 'UserMeta' },
+    player2: { type: Schema.ObjectId, ref: 'UserMeta' },
     players: [{ type: Schema.ObjectId, ref: 'UserMeta' }],
     winner: { type: String },
     status: { type: Number, enum: [0, 1] }, //  0: playing, 1: over
