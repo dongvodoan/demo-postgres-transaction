@@ -13,6 +13,7 @@ module.exports = function(app){
         let name = req.body.name;
         let description = req.body.description;
         let ratio = req.body.ratio;
+        let appId = req.body.appId;
 
         if (!name)
             res.json({error: true, data: 'name is require', code: 422});
@@ -20,6 +21,8 @@ module.exports = function(app){
             res.json({error: true, data: 'description is require', code: 422});
         if (!ratio)
             res.json({error: true, data: 'ratio is require', code: 422});
+        if (!appId)
+            res.json({error: true, data: 'appId is require', code: 422});
         next();
     });
 };
