@@ -31,4 +31,8 @@ module.exports = function(app){
     app.route('/user/me').get(userController.getProfile);
 
     app.route('/history-transaction').get(userController.getHistoryTransactions);
+
+    app.route('/get-balance/:id').get(userController.getBalanceByUser);
+
+    app.route('/balance/me').get(userController.getBalanceByMe);
 }

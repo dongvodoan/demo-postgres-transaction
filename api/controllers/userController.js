@@ -32,5 +32,17 @@ module.exports = {
     getHistoryTransactions: asyncWrap(async (req, res) => {
         let histories = await historyTransaction.find({});
         res.json({error: false, data: histories});
+    }),
+
+    getBalanceByUser: asyncWrap(async (req, res) => {
+        let userId = req.params.id;
+        let deposit = await userRepository.getDepositBalanceByUser(userId);
+        res.json({error: false, data: deposit});
+    }),
+
+    getBalanceByMe: asyncWrap(async (req, res) => {
+        let userId = req.user._id;
+        let deposit = await userRepository.getDepositBalanceByUser(userId);
+        res.json({error: false, data: deposit});
     })
 }
