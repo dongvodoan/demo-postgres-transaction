@@ -10,7 +10,6 @@ const path = require("path");
 const fse = require("fs-extra");
 const cronService = require("./api/services/cronService");
 
-
 //  mongodb
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db_url, {
@@ -27,11 +26,15 @@ global.asyncWrap = (fn, errorCallback) => {
             if (errorCallback){
                 errorCallback(req, res, error);
             } else {
-                res.json({error: true, data: error});
+                if (config.env !== 'production')
+                    res.json({error: true, data: 'Server error', code: 500});
+                res.json({error: true, data: 'bad request', code: 400});
             }
         })
     }
 };
+
+global.ObjectId = mongoose.Types.ObjectId;
 
 /**
  * Global all Services in api/services

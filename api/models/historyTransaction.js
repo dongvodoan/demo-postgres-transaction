@@ -23,7 +23,7 @@ const HistoryTransactionSchema = new mongoose.Schema(
             type: Number,
             enum: [0, 1] // 0: fail ; 1: success
         },
-        mothod : {
+        method : {
             type: Number,
             enum: [0, 1] // 0: subtract coin ; 1: add coin
         },
