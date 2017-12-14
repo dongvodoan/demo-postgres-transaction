@@ -53,7 +53,6 @@ module.exports = function(app){
             userRepository.getDepositBalanceByUser(player1),
             userRepository.getDepositBalanceByUser(player2)
         ]);
-        console.log();
 
         if (!promise[0])
             res.json({error: true, data: 'game type not found'});
@@ -64,11 +63,11 @@ module.exports = function(app){
         if (!promise[2]) 
             res.json({error: true, data: 'player 2 not found'}); 
 
-        // if (promise[3] < amount)
-        //     res.json({error: true, data: 'player 1 enough coin'});
+        if (promise[3] < amount)
+            res.json({error: true, data: 'player 1 enough coin'});
 
-        // if (promise[4] < amount)
-        //     res.json({error: true, data: 'player 2 enough coin'});
+        if (promise[4] < amount)
+            res.json({error: true, data: 'player 2 enough coin'});
          
         next();
     }));
