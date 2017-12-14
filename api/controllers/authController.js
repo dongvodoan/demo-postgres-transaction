@@ -26,8 +26,9 @@ module.exports = {
                     accessToken: accessToken
                 };
                 let newUser = await userRepository.createUser(data);
-                let token = UserService.generateUserToken({_id: newUser.id});
-                return res.json({error: false, data: token});
+                console.log(newUser);
+                let token = userService.generateUserToken({_id: newUser.id});
+                res.json({error: false, data: token});
             }
         }
         res.json({error: true, data: 'bad request'});

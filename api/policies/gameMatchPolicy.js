@@ -1,5 +1,8 @@
 'use strict'
 
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
 module.exports = function(app){
     app.use('/playgame', asyncWrap(async (req, res, next) => {
         const gameTypeId   = req.body.gameTypeId;
@@ -13,14 +16,25 @@ module.exports = function(app){
 
         if (!gameTypeId) {
             res.json({error: true,data: 'gameTypeId not found'});
+        }
+        if (!ObjectId.isValid(gameTypeId)){
+            res.json({error: true,data: 'game type id null or malformed'});
         } 
         
         if (!player1) {
             res.json({error: true, data: 'player 1 not found'});
         }
+
+        if (!ObjectId.isValid(player1)){
+            res.json({error: true,data: 'player 1 id null or malformed'});
+        } 
         
         if (!player2) {
             res.json({error: true, data: 'player 2 not found'});
+        }
+
+        if (!ObjectId.isValid(player2)){
+            res.json({error: true,data: 'player 2 id null or malformed'});
         } 
         
         if (!amount) {
@@ -39,6 +53,7 @@ module.exports = function(app){
             userRepository.getDepositBalanceByUser(player1),
             userRepository.getDepositBalanceByUser(player2)
         ]);
+        console.log();
 
         if (!promise[0])
             res.json({error: true, data: 'game type not found'});
@@ -49,11 +64,11 @@ module.exports = function(app){
         if (!promise[2]) 
             res.json({error: true, data: 'player 2 not found'}); 
 
-        if (promise[3] < amount)
-            res.json({error: true, data: 'player 1 enough coin'});
+        // if (promise[3] < amount)
+        //     res.json({error: true, data: 'player 1 enough coin'});
 
-        if (promise[4] < amount)
-            res.json({error: true, data: 'player 2 enough coin'});
+        // if (promise[4] < amount)
+        //     res.json({error: true, data: 'player 2 enough coin'});
          
         next();
     }));
@@ -68,8 +83,12 @@ module.exports = function(app){
 
         if (!winner)
             res.json({error: true, data: 'winner not found'});
+        if (!ObjectId.isValid(gameId))
+            res.json({error: true,data: 'game id null or malformed'});
         if (!gameId)
             res.json({error: true, data: 'gameId not found'});
+        if (!ObjectId.isValid(winner))
+            res.json({error: true,data: 'winner id null or malformed'});
 
         let checkGame = await game.count({
             _id: gameId,
@@ -88,9 +107,18 @@ module.exports = function(app){
     });
 
     app.use('/get-history/:id', (req, res, next) => {
-        if(!req.user) {
+        if(!req.user)
             res.json({error: true, data: 'unauthorized', code: 401});
-        }
+        if (!req.params.id)
+            res.json({error: true, data: 'user id is require', code: 422});
+        next();
+    });
+
+    app.use('/get-gameinfo/:id', (req, res, next) => {
+        if (!req.user)
+            res.json({error: true, data: 'unauthorized', code: 401});
+        if (!req.params.id)
+            res.json({error: true, data: 'user id is require', code: 422});
         next();
     });
 
