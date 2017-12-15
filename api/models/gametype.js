@@ -3,7 +3,8 @@
 const mongoose = require('mongoose');
 
 const gameTypeSchema = new mongoose.Schema({
-    appId: { type: String },
+    appId: { type: String, require: true, unique: true },
+    bapSecretKey: { type: String, require: true, unique: true },
     name: { type: String },
     description: { type: String },
     ratio: { type: Number }   //  0 < ratio < 1
