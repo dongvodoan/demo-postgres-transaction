@@ -7,7 +7,7 @@ module.exports = {
     }),
 
     getAllGameType: asyncWrap(async (req, res) => {
-        let gameTypes = await gametype.find({});
+        let gameTypes = await gametype.find({}).select('-__v');
         res.json({error: false, data: gameTypes});
     })
 }
