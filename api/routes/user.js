@@ -16,7 +16,7 @@ module.exports = function(app){
      * Get all user Route
      * @headers x-access-token
      */
-    app.route('/users').get(userController.getUsers);
+    app.route('/admin/users').get(userController.getUsers);
 
     /**
      * Get detail user Route
@@ -30,7 +30,7 @@ module.exports = function(app){
      */
     app.route('/user/me').get(userController.getProfile);
 
-    app.route('/history-transaction').get(userController.getHistoryTransactions);
+    app.route('/admin/history-transaction').get(userController.getHistoryTransactions);
 
     app.route('/get-balance/:id').get(userController.getBalanceByUser);
 

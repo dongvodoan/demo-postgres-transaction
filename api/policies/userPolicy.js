@@ -1,11 +1,6 @@
 'use strict'
 
 module.exports = function(app){
-    app.get('/users', (req, res, next) => {
-        if (!req.user)
-            return res.json({error: true, data: 'unauthorized', code: 401});
-        next();
-    });
 
     app.get('/get-userinfo/:id', (req, res, next) => {
         if (!req.user)

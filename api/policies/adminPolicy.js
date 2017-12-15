@@ -25,4 +25,12 @@ module.exports = function(app){
             return res.json({error: true, data: 'appId is require', code: 422});
         next();
     });
+
+    app.get('/admin/get-history/:id', (req, res, next) => {
+        if (!req.params.id)
+            return res.json({error: true, data: 'user id is require', code: 422});
+        if (!ObjectId.isValid(req.params.id))
+            return res.json({error: true, data: 'user id null or malformed', code: 422});
+        next();
+    });
 };
