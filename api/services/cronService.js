@@ -4,11 +4,11 @@ const schedule = require("node-schedule");
 
 module.exports = {
     cronTransacionFails: () => {
-        schedule.scheduleJob('*/1 * * * *', async () => {
+        schedule.scheduleJob('*/5 * * * *', async () => {
             try {
                let transactions = await historyTransaction.find({
                    status: historyTransaction.status.fail 
-                }).populate('gameType', 'appId');
+                }).populate('gameType', 'appId').limit(10);
                 console.log(`${transactions.length} transactions not completed!`);
                 for (let i = 0; i < transactions.length; i++) {
                     let transaction = transactions[i];                   
@@ -19,7 +19,6 @@ module.exports = {
                     let appId = transaction.gameType.appId;
                     if (parseInt(method) === historyTransaction.methods.subtractCoin) {
                         let resDataSub = await transactionRepository.postSubtractAmount(user, amount, appId);
-                        console.log(resDataSub);
                         if (resDataSub.status === 200) {
                             await historyTransaction.findByIdAndUpdate({ _id: transactionId}, { $set: { status: 1 }});
                         }
