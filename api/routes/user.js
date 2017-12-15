@@ -13,7 +13,7 @@ module.exports = function(app){
     app.route('/login/bap-platform').post(authController.callbackPlatform);
 
     /**
-     * Get all user Route
+     * Get all users Route
      * @headers x-access-token
      */
     app.route('/admin/users').get(userController.getUsers);
