@@ -57,19 +57,19 @@ module.exports = {
     }),
 
     getAllGame: asyncWrap(async (req, res) => {
-        let gameMaths =  await game.find({});
+        let gameMaths =  await game.find({}).select('-__v');
         res.json({error: false, data: gameMaths});
     }),
 
     getHistoryByUserId: asyncWrap(async (req, res) => {
         let userId = req.params.id;
-        let historyUser =  await game.find({$or: [{player1: userId}, {player2: userId}]});
+        let historyUser =  await game.find({$or: [{player1: userId}, {player2: userId}]}).select('-__v');
         res.json({error: false, data: historyUser});
     }),
 
     getGameById: asyncWrap(async (req, res) => {
         let gameId = req.params.id;
-        let gameInfo = await game.findOne({_id: gameId});
+        let gameInfo = await game.findOne({_id: gameId}).select('-__v');
         res.json({error: false, data: gameInfo});
     }),
 

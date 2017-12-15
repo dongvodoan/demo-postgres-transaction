@@ -16,6 +16,11 @@ module.exports = {
         res.json({error: false, data: 'Clean All Database had been successfully!'});
     }),
 
+    cleanDBForProd: asyncWrap(async (req, res) => {
+        await gametype.remove({});
+        res.json({error: false, data: "Clean DB (without clean game type) had been successfully!"});
+    }),
+
     fakeGameType: asyncWrap(async (req, res) => {
         await gametype.remove({});
         let fake = await gametype.create(gameTypeData);
