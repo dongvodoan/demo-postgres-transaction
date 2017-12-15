@@ -12,6 +12,6 @@ module.exports = {
     BAPUri: "http://111.221.46.238:1341/api/v1/",     // staging
     jwtSecret: 'SVhhTT1jZKbH1JbpQDv2',
     jwtExpiredIn: '7 days',
-    //env: 'production', // product
+    // env: 'production', // product
     env: 'staging'     // staging
 };
