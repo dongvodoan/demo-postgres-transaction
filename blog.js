@@ -1,14 +1,16 @@
 'use strict'
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var config = require('./config/configuration');
-var app = new express();
-
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+let config = require('./config/development');
+const app = new express();
 const path = require("path");
 const fse = require("fs-extra");
-const cronService = require("./api/services/cronService");
+
+if (process.env.NODE_ENV === 'production') {
+    config = require('./config/production');
+}
 
 //  mongodb
 mongoose.Promise = global.Promise;
@@ -26,13 +28,16 @@ global.asyncWrap = (fn, errorCallback) => {
             if (errorCallback){
                 errorCallback(req, res, error);
             } else {
-                if (config.env !== 'production')
+                if (process.env.NODE_ENV !== 'production') {
                     res.json({error: true, data: 'Server error', code: 500});
+                }
                 res.json({error: true, data: 'bad request', code: 400});
             }
         })
     }
 };
+
+global.config = config;
 
 global.ObjectId = mongoose.Types.ObjectId;
 
@@ -109,17 +114,13 @@ app.use('*', async (req, res, next) => {
 
 // middleware/validation
 require('./api/policies/userPolicy')(app);
-require('./api/policies/loginPolicy')(app);
-require('./api/policies/gameMatchPolicy')(app);
 require('./api/policies/adminPolicy')(app);
 
 //  api
 require('./api/routes/user')(app);
-require('./api/routes/game')(app);
-require('./api/routes/gametype')(app);
 
 // faker
-if (config.env !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
     require('./api/policies/fakerPolicy')(app);
     require('./api/routes/faker')(app);
 }
@@ -130,9 +131,6 @@ app.use('*', (req, res, next) => {
     next();
 });
 
-// Cron job
-cronService.cronTransacionFails();
-
 app.listen(config.port, function(err) {
     if (err) {
         console.log('Start server error');
@@ -140,7 +138,7 @@ app.listen(config.port, function(err) {
         console.log(
             `
               =====================================================
-              -> Server Game 🏃 (running) on Port:${config.port}
+              -> Server Blog 🏃 (running) on: http://localhost:${config.port}
               =====================================================
             `
         );

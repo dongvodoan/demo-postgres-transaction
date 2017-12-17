@@ -5,7 +5,7 @@ module.exports = function(app){
         let faker = req.headers['faker'];
         res.header('Access-Control-Allow-Origin', '*');
         if(faker !== 'fk123') {
-            return res.json({error: true, data: 'fake off', code: 400});
+            return res.status(400).json({error: true, data: 'fake off', code: 400});
         }
         next();
     });

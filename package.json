@@ -1,32 +1,32 @@
 {
-  "name": "kbrserver",
+  "name": "blog",
   "version": "1.0.0",
-  "description": "kbr server",
-  "main": "app.js",
+  "description": "learn node js",
+  "main": "blog.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon kbrgame.js"
+    "start": "cross-env NODE_ENV=development nodemon blog.js",
+    "prod": "cross-env NODE_ENV=production nodemon blog.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab-new.bap.jp/Game/kbr-server"
+    "url": "https://github.com/DevsInDaNang/team-2-blog-server"
   },
-  "author": "tienlv",
+  "author": "dongvd",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.5.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
+    "cross-env": "^5.1.1",
     "express": "^4.15.5",
+    "faker": "^4.1.0",
     "fs-extra": "^4.0.3",
     "jsonwebtoken": "^8.1.0",
-    "keythereum": "^1.0.2",
     "mongoose": "^4.11.13",
-    "node-schedule": "^1.2.5",
+    "mongoose-paginate": "^5.0.3",
+    "nodemailer": "^4.4.1",
     "nodemon": "^1.12.1",
-    "passport": "^0.4.0",
     "path": "^0.12.7",
-    "request": "^2.83.0",
-    "web3": "^0.20.2"
+    "request": "^2.83.0"
   }
 }
