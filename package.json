@@ -15,18 +15,10 @@
   "author": "dongvd",
   "license": "ISC",
   "dependencies": {
-    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "cross-env": "^5.1.1",
     "express": "^4.15.5",
-    "faker": "^4.1.0",
-    "fs-extra": "^4.0.3",
-    "jsonwebtoken": "^8.1.0",
-    "mongoose": "^4.11.13",
-    "mongoose-paginate": "^5.0.3",
-    "nodemailer": "^4.4.1",
     "nodemon": "^1.12.1",
-    "path": "^0.12.7",
-    "request": "^2.83.0"
+    "pg": "^7.4.1"
   }
 }
